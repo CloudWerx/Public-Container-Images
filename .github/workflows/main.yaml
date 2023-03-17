@@ -1,8 +1,10 @@
 name: Update Gcloud Image
-on: workflow_dispatch
 
+on: 
+  schedule:
+    - workflow_dispatch
+    - "30 8 * * *"
 jobs:
-
   check-release:
     name: Check if latest image version matches gcloud cli version
     runs-on: ubuntu-latest
@@ -32,9 +34,10 @@ jobs:
       - id: setver
         name: "get latest and current gcloud cli"
         run: |
-          echo "::set-output name=latestversion::405.0.0"
-          #echo "::set-output name=latestversion::$(curl -sL https://cloud.google.com/sdk/docs/release-notes | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]' | sort -n | tail -n 1)"
-          echo "::set-output name=currentversion::$(gcloud container images list-tags us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud --format="value(tags)" --filter=tags:latest | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]')"
+          echo "latestversion"=405.0.0 >> $GITHUB_OUTPUT
+          echo "currentversion"=$(gcloud container images list-tags us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud --format="value(tags)" --filter=tags:latest | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]') >> $GITHUB_OUTPUT
+          #echo "latestversion=$(curl -sL https://cloud.google.com/sdk/docs/release-notes | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]' | sort -n | tail -n 1)" >>$GITHUB_OUTPUT
+
 
   artifactory-build-release:
     name: Tagged Image release to Google Artifact Registry
@@ -50,25 +53,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       
-      # - id: auth
-      #   name: Authenticate with Google Cloud
-      #   uses: google-github-actions/auth@v0
-      #   with:
-      #     token_format: access_token
-      #     workload_identity_provider: ${{secrets.WORKLOAD_IDENTITY_PROVIDER}}
-      #     service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
-      #     access_token_lifetime: 300s
+      - id: auth
+        name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{secrets.WORKLOAD_IDENTITY_PROVIDER}}
+          service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
+          access_token_lifetime: 300s
 
       - name: Login to Artifact Registry
         uses: docker/login-action@v1
         with:
           registry: us-central1-docker.pkg.dev
           username: oauth2accesstoken
-          password: ${{ needs.check-release.outputs.access_token }}
+          password: ${{ steps.auth.outputs.access_token }}
           
       - name: Build and Push
         uses: docker/build-push-action@v2
         with: 
           context: ./gcloudCLI
-          build-args: CLOUD_SDK_VERSION = ${{ needs.check-release.ver.ouputs.latestversion }}
+          build-args: CLOUD_SDK_VERSION = ${{ needs.check-release.ver.outputs.latestversion }}
           tags: us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:${{ needs.check-release.ouputs.latestversion }}, us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:latest
