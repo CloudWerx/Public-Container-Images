@@ -13,7 +13,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Create directory and download gcloud cli
 RUN mkdir /gcloud && curl -o /gcloud/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz 
-
+RUN echo "${CLOUD_SDK_VERSION}}"
 # Installing the package
 RUN cd gcloud \
   # Unpack
