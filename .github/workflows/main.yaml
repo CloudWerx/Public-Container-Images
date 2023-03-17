@@ -72,4 +72,4 @@ jobs:
         with: 
           context: ./gcloudCLI
           build-args: CLOUD_SDK_VERSION = ${{ needs.check-release.ver.ouputs.latestversion }}
-          tags: us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:${{ needs.check-release.ver.ouputs.latestversion }}, us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:latest
+          tags: us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:${{ needs.ver.ouputs.latestversion }}, us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:latest
