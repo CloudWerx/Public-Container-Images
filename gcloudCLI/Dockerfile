@@ -6,7 +6,8 @@ RUN apk add --update --no-cache\
     busybox \
     bash \
     curl \
-    which
+    which \
+    tar
 
 SHELL ["/bin/bash", "-c"]
 
