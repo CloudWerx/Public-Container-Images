@@ -1,4 +1,4 @@
-name: Release
+name: Update Gcloud Image
 on: workflow_dispatch
 
 jobs:
@@ -30,40 +30,42 @@ jobs:
           version: '>= 363.0.0'
   
       - name: "get latest gcloud cli"
-        run: echo "latestversion=$(curl -sL https://cloud.google.com/sdk/docs/release-notes | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]' | sort -n | tail -n 1)" >> $GITHUB_ENV
- 
+        #run: echo "latestversion=$(curl -sL https://cloud.google.com/sdk/docs/release-notes | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]' | sort -n | tail -n 1)" >> $GITHUB_ENV
+        run: echo "latestversion=405.0.0" >> $GITHUB_ENV
+
       - name: "get current image verion"
         run: echo "currentversion=$(gcloud container images list-tags us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud --format="value(tags)" --filter=tags:latest | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]')" >> $GITHUB_ENV
  
-  # docker-release:
-  #   name: Tagged Docker release to Google Artifact Registry
-  #   runs-on: ubuntu-latest
 
-  #   permissions:
-  #     contents: 'read'
-  #     id-token: 'write'
+  artifactory-build-release:
+    name: Tagged Image release to Google Artifact Registry
+    runs-on: ubuntu-latest
+    needs: check-release
+    if: $latestversion>$currentversion
 
-  #   steps:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+            
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v1
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ jobs.auth.outputs.access_token }}
+          
 
+      - name: Build and Push
+        with:
+          push: true
+        run: |-
+          docker build /gcloudCLI \
+            -f /gcloudCLI/Dockerfile \
+            --build-arg CLOUD_SDK_VERSION=$latestversion
+            --tag "us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:${{latestversion}}" \
+            --tag "us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:latest"
 
-
-  #     - name: Login to Artifact Registry
-  #       uses: docker/login-action@v1
-  #       with:
-  #         registry: us-west2-docker.pkg.dev
-  #         username: oauth2accesstoken
-  #         password: ${{ jobs.auth.outputs.access_token }}
-
-  #     - name: Get tag
-  #       id: get-tag
-  #       run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
-
-  #     - id: docker-push-tagged
-  #       name: Tag Docker image and push to Google Artifact Registry
-  #       uses: docker/build-push-action@v2
-  #       with:
-  #         push: true
-  #         tags: |
-  #            <your-gar-region>-docker.pkg.dev/<your-project-id>/<your-gar-repo-name>/<your-docker-image-name>:${{ steps.get-tag.outputs.short_ref }}
-  #            <your-gar-region>-docker.pkg.dev/<your-project-id>/<your-gar-repo-name>/<your-docker-image-name>:latest
