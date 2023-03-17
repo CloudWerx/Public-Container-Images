@@ -6,6 +6,11 @@ jobs:
   check-release:
     name: Check if latest image version matches gcloud cli version
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      
     steps:
       - id: auth
         name: Authenticate with Google Cloud
