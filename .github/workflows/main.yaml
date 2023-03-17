@@ -33,7 +33,7 @@ jobs:
         run: echo "latestversion=$(curl -sL https://cloud.google.com/sdk/docs/release-notes | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]' | sort -n | tail -n 1)" >> $GITHUB_ENV
  
       - name: "get current image verion"
-        run: echo "currentversion=$(gcloud artifacts docker images list us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud --tag="latest" --include-tags --format="value(tags)" | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]')" >> $GITHUB_ENV
+        run: echo "currentversion=$(gcloud container images list-tags us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud --format="value(tags)" --filter=tags:latest | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]')" >> $GITHUB_ENV
  
   # docker-release:
   #   name: Tagged Docker release to Google Artifact Registry
