@@ -32,9 +32,11 @@ jobs:
       - id: setver
         name: "get latest and current gcloud cli"
         run: |
-          echo "latestversion"=405.0.0 >> $GITHUB_OUTPUT
-          echo "currentversion"=$(gcloud container images list-tags us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud --format="value(tags)" --filter=tags:latest | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]') >> $GITHUB_OUTPUT
-          #echo "latestversion=$(curl -sL https://cloud.google.com/sdk/docs/release-notes | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]' | sort -n | tail -n 1)" >>$GITHUB_OUTPUT
+          export currentversion=$(gcloud container images list-tags us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud --format="value(tags)" --filter=tags:latest | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]') 
+          echo "currentversion"=$currentversion >> $GITHUB_OUTPUT
+          #export latestversion=$(curl -sL https://cloud.google.com/sdk/docs/release-notes | grep -oE '[0-9][0-9][0-9]\.[0-9]\.[0-9]' | sort -n | tail -n 1)
+          export latestversion=405.0.0
+          echo "latestversion"=$latestversion >> $GITHUB_OUTPUT
           env
 
   artifactory-build-release:
