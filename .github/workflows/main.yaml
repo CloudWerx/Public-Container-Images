@@ -53,8 +53,8 @@ jobs:
           
       - name: Build
         run: |-
-          docker build /gcloudCLI \
-            -f /gcloudCLI/Dockerfile \
+          docker build ./gcloudCLI \
+            -f ./gcloudCLI/Dockerfile \
             --build-arg CLOUD_SDK_VERSION=$latestversion
             --tag "us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:${{ needs.check-release.ver.ouputs.latestversion }}" \
             --tag "us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/gcloud:latest"
