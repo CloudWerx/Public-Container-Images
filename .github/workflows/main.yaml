@@ -1,9 +1,7 @@
 name: Update Gcloud Image
 
 on: 
-  schedule:
     - workflow_dispatch
-    - "30 8 * * *"
 jobs:
   check-release:
     name: Check if latest image version matches gcloud cli version
