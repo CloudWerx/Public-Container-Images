@@ -41,9 +41,11 @@ jobs:
 
   artifactory-build-release:
     name: Tagged Image release to Google Artifact Registry
+    env:
+      
     runs-on: ubuntu-latest
     needs: check-release
-    if: ${{ needs.check-release.outputs.latestversion }} > ${{ needs.check-release.outputs.currentversion }}
+    if: 
 
     permissions:
       contents: 'read'

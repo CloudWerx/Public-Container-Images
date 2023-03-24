@@ -1,0 +1,8 @@
+docker run  \
+    -e USE_SECRET_MANAGER=true \
+    -e DB_HOST=10.95.80.5 \
+    -e SECRET_NAME_DB_NAME=postgres-db-name \
+    -e SECRET_NAME_DB_PWD=postgres-password \
+    -e SECRET_NAME_DB_USER=postgres-username \
+    -p 5432:5432 \
+    us-central1-docker.pkg.dev/public-cloudwerx-artifactory/cwx-public-images/pgbouncer:test2

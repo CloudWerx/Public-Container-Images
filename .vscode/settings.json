@@ -1,0 +1,9 @@
+{
+    "files.exclude": {
+        "**/.git": false,
+        "**/.vscode": true
+    },
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "file:///c%3A/Users/yashm/OneDrive/Documents/TricustomCodeBase/Gitea/Public-Container-Images/gcloudCLI/actionstemp.yaml"
+    }
+}
